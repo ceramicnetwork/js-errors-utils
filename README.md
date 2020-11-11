@@ -21,7 +21,7 @@ try {
   assertAs(typeof input === 'string', LibError, 120, 'Input must be string')
   assertAs(input === 'foo', LibError, 123, 'Input must be foo')
 } catch (error) {
-  console.log(err.toString()) // '[LIB123] Input must be foo'
+  console.log(error.toString()) // '[LIB123] Input must be foo'
   throw new LibError(10, 'Input validation failed', error) // Wrap thrown error
 }
 ```

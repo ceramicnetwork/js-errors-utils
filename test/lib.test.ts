@@ -90,4 +90,43 @@ describe('lib', () => {
       expect(() => assertAs(false, TestError, 1, 'should be true')).toThrow(TestError)
     })
   })
+
+  test('example code works', () => {
+    const LibError = createNamespaceError('LIB', { package: 'my-lib', version: '0.1.0' })
+    const input = 'any'
+
+    let output
+    try {
+      assertAs(typeof input === 'string', LibError, 120, 'Input must be string')
+      // @ts-ignore
+      assertAs(input === 'foo', LibError, 123, 'Input must be foo')
+    } catch (error) {
+      const wrapped = new LibError(10, 'Input validation failed', error)
+      output = wrapped.toJSON()
+    }
+
+    expect(output).toMatchSnapshot()
+  })
+
+  test('cross-namespaces works', () => {
+    const LibAError = createNamespaceError('LIBA', { package: 'lib-a', version: '0.1.0' })
+
+    function validate(input: string): void {
+      assertAs(typeof input === 'string', LibAError, 120, 'Input must be string')
+      // @ts-ignore
+      assertAs(input === 'foo', LibAError, 123, 'Input must be foo')
+    }
+
+    const LibBError = createNamespaceError('LIBB', { package: 'lib-b', version: '0.2.0' })
+
+    let output
+    try {
+      validate('any')
+    } catch (error) {
+      const wrapped = new LibBError(10, 'Input validation failed', error)
+      output = wrapped.toJSON()
+    }
+
+    expect(output).toMatchSnapshot()
+  })
 })
