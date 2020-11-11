@@ -18,9 +18,11 @@ const LibError = createNamespaceError('LIB', { package: name, version })
 
 const input = 'any'
 try {
-  assertAs(input === 'foo', LibError, 123, 'Should be foo')
+  assertAs(typeof input === 'string', LibError, 120, 'Input must be string')
+  assertAs(input === 'foo', LibError, 123, 'Input must be foo')
 } catch (error) {
-  console.log(err.toString()) // '[LIB123] Should be foo'
+  console.log(err.toString()) // '[LIB123] Input must be foo'
+  throw new LibError(10, 'Input validation failed', error) // Wrap thrown error
 }
 ```
 

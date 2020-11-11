@@ -27,7 +27,9 @@ export class StackError extends Error {
   constructor(code: string, message: string, parentError?: StackError) {
     super(message)
     Object.setPrototypeOf(this, StackError.prototype)
-    Error.captureStackTrace?.(this, StackError)
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, StackError)
+    }
 
     this.code = code
     this.errorStack = parentError ? parentError.toErrorStack() : []
@@ -58,7 +60,9 @@ export function createNamespaceError(namespace: string, metadata: Record<string,
     constructor(code: string | number, message: string, parentError?: StackError) {
       super(`${namespace}${code}`, message, parentError)
       Object.setPrototypeOf(this, NamespaceError.prototype)
-      Error.captureStackTrace?.(this, NamespaceError)
+      if (Error.captureStackTrace) {
+        Error.captureStackTrace(this, NamespaceError)
+      }
 
       this.metadata = metadata
     }
