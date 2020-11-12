@@ -6,6 +6,27 @@ describe('lib', () => {
       expect(new StackError('TEST0', 'test')).toBeInstanceOf(Error)
     })
 
+    describe('fromError() static method', () => {
+      test('returns a StackError as-is', () => {
+        const err = new StackError('TEST0', 'test')
+        expect(StackError.from(err)).toBe(err)
+      })
+
+      test('casts to StackError with the given code', () => {
+        const error = StackError.from(new Error('test'), 'TEST0')
+        expect(error).toBeInstanceOf(StackError)
+        expect(error.code).toBe('TEST0')
+        expect(error.message).toBe('test')
+      })
+
+      test('casts to StackError with the fallback code', () => {
+        const error = StackError.from(new Error('test'))
+        expect(error).toBeInstanceOf(StackError)
+        expect(error.code).toBe('SE0')
+        expect(error.message).toBe('test')
+      })
+    })
+
     test('has a code property', () => {
       const error = new StackError('TEST0', 'test')
       expect(error.code).toBe('TEST0')
@@ -91,42 +112,60 @@ describe('lib', () => {
     })
   })
 
-  test('example code works', () => {
-    const LibError = createNamespaceError('LIB', { package: 'my-lib', version: '0.1.0' })
-    const input = 'any'
+  describe('integration', () => {
+    test('example code', () => {
+      const LibError = createNamespaceError('LIB', { package: 'my-lib', version: '0.1.0' })
+      const input = 'any'
 
-    let output
-    try {
-      assertAs(typeof input === 'string', LibError, 120, 'Input must be string')
-      // @ts-ignore
-      assertAs(input === 'foo', LibError, 123, 'Input must be foo')
-    } catch (error) {
-      const wrapped = new LibError(10, 'Input validation failed', error)
-      output = wrapped.toJSON()
-    }
+      let output
+      try {
+        assertAs(typeof input === 'string', LibError, 120, 'Input must be string')
+        // @ts-ignore
+        assertAs(input === 'foo', LibError, 123, 'Input must be foo')
+      } catch (error) {
+        const wrapped = new LibError(10, 'Input validation failed', error)
+        output = wrapped.toJSON()
+      }
 
-    expect(output).toMatchSnapshot()
-  })
+      expect(output).toMatchSnapshot()
+    })
 
-  test('cross-namespaces works', () => {
-    const LibAError = createNamespaceError('LIBA', { package: 'lib-a', version: '0.1.0' })
+    test('using standard error', () => {
+      const LibError = createNamespaceError('LIB', { package: 'my-lib', version: '0.1.0' })
+      const input = 'any'
 
-    function validate(input: string): void {
-      assertAs(typeof input === 'string', LibAError, 120, 'Input must be string')
-      // @ts-ignore
-      assertAs(input === 'foo', LibAError, 123, 'Input must be foo')
-    }
+      let output
+      try {
+        // @ts-ignore
+        assert(input === 'foo', 'Input must be foo')
+      } catch (error) {
+        const wrapped = new LibError(10, 'Input validation failed', error)
+        output = wrapped.toJSON()
+      }
 
-    const LibBError = createNamespaceError('LIBB', { package: 'lib-b', version: '0.2.0' })
+      expect(output).toMatchSnapshot()
+    })
 
-    let output
-    try {
-      validate('any')
-    } catch (error) {
-      const wrapped = new LibBError(10, 'Input validation failed', error)
-      output = wrapped.toJSON()
-    }
+    test('different namespaces', () => {
+      const LibAError = createNamespaceError('LIBA', { package: 'lib-a', version: '0.1.0' })
 
-    expect(output).toMatchSnapshot()
+      function validate(input: string): void {
+        assertAs(typeof input === 'string', LibAError, 120, 'Input must be string')
+        // @ts-ignore
+        assertAs(input === 'foo', LibAError, 123, 'Input must be foo')
+      }
+
+      const LibBError = createNamespaceError('LIBB', { package: 'lib-b', version: '0.2.0' })
+
+      let output
+      try {
+        validate('any')
+      } catch (error) {
+        const wrapped = new LibBError(10, 'Input validation failed', error)
+        output = wrapped.toJSON()
+      }
+
+      expect(output).toMatchSnapshot()
+    })
   })
 })

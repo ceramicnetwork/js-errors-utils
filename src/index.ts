@@ -7,6 +7,15 @@ export type StackErrorJSON = {
 }
 
 export class StackError extends Error {
+  static from(error: Error, code = 'SE0'): StackError {
+    if (error instanceof StackError) {
+      return error
+    }
+    const se = new StackError(code, error.message)
+    se.stack = error.stack
+    return se
+  }
+
   static fromJSON(json: StackErrorJSON): StackError {
     const error = new StackError(json.code, json.message)
     error.errorStack = (json.stack ?? []).reduceRight((stack, e) => {
@@ -24,7 +33,7 @@ export class StackError extends Error {
   metadata: Record<string, unknown> = {}
   name = 'StackError'
 
-  constructor(code: string, message: string, parentError?: StackError) {
+  constructor(code: string, message: string, wrapError?: Error) {
     super(message)
     Object.setPrototypeOf(this, StackError.prototype)
     if (Error.captureStackTrace) {
@@ -32,7 +41,7 @@ export class StackError extends Error {
     }
 
     this.code = code
-    this.errorStack = parentError ? parentError.toErrorStack() : []
+    this.errorStack = wrapError ? StackError.from(wrapError).toErrorStack() : []
   }
 
   toErrorStack(): Array<StackError> {
@@ -57,8 +66,8 @@ export class StackError extends Error {
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function createNamespaceError(namespace: string, metadata: Record<string, unknown> = {}) {
   return class NamespaceError extends StackError {
-    constructor(code: string | number, message: string, parentError?: StackError) {
-      super(`${namespace}${code}`, message, parentError)
+    constructor(code: string | number, message: string, wrapError?: Error) {
+      super(`${namespace}${code}`, message, wrapError)
       Object.setPrototypeOf(this, NamespaceError.prototype)
       if (Error.captureStackTrace) {
         Error.captureStackTrace(this, NamespaceError)

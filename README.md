@@ -44,35 +44,54 @@ type StackErrorJSON = {
 
 Extends the built-in `Error` class
 
-#### new StackError()
+### StackError.from()
+
+Casts an `Error` to a `StackError`, using the given `code`. Calling this function with an instance of `StackError` will return the input unchanged.
+
+**Arguments**
+
+1. `error: Error`
+1. `code?: string = 'SE0'`
+
+**Returns** `StackError`
+
+### StackError.fromJSON()
+
+**Arguments**
+
+1. `json: StackErrorJSON`
+
+**Returns** `StackError`
+
+### new StackError()
 
 **Arguments**
 
 1. `code: string`
 1. `message: string`
-1. `parentError?: StackError`
+1. `wrapError?: Error`
 
-#### .code
-
-**Returns** `string`
-
-#### .message
+### .code
 
 **Returns** `string`
 
-#### .errorStack
+### .message
+
+**Returns** `string`
+
+### .errorStack
 
 **Returns** `Array<StackError>` based on the `parentError` provided in constructor
 
-#### .metadata
+### .metadata
 
 **Returns** `Record<string, unknown>`
 
-#### .toErrorStack()
+### .toErrorStack()
 
 **Returns** `Array<StackError>` of all the errors in the stack
 
-#### .toJSON()
+### .toJSON()
 
 Serializes the error to JSON. By default the `errorStack` is included on a single level, setting the `withStack` argument to `false` will serialize the error only, discarding the stack.
 
@@ -118,7 +137,7 @@ The `NamespaceError` class constructor uses the following arguments:
 
 1. `code: string | number`
 1. `message: string`
-1. `parentError?: StackError`
+1. `wrapError?: Error`
 
 ## License
 

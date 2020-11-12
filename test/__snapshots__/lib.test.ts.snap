@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`lib cross-namespaces works 1`] = `
+exports[`lib integration different namespaces 1`] = `
 Object {
   "code": "LIBB10",
   "message": "Input validation failed",
@@ -24,7 +24,7 @@ Object {
 }
 `;
 
-exports[`lib example code works 1`] = `
+exports[`lib integration example code 1`] = `
 Object {
   "code": "LIB10",
   "message": "Input validation failed",
@@ -41,6 +41,27 @@ Object {
         "package": "my-lib",
         "version": "0.1.0",
       },
+      "name": "StackError",
+      "stack": Array [],
+    },
+  ],
+}
+`;
+
+exports[`lib integration using standard error 1`] = `
+Object {
+  "code": "LIB10",
+  "message": "Input validation failed",
+  "metadata": Object {
+    "package": "my-lib",
+    "version": "0.1.0",
+  },
+  "name": "StackError",
+  "stack": Array [
+    Object {
+      "code": "SE0",
+      "message": "Input must be foo",
+      "metadata": Object {},
       "name": "StackError",
       "stack": Array [],
     },
