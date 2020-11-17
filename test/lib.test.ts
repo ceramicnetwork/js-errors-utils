@@ -136,7 +136,7 @@ describe('lib', () => {
 
       let output
       try {
-        // @ts-ignore
+        // @ts-expect-error
         assert(input === 'foo', 'Input must be foo')
       } catch (error) {
         const wrapped = new LibError(10, 'Input validation failed', error)
@@ -151,7 +151,6 @@ describe('lib', () => {
 
       function validate(input: string): void {
         assertAs(typeof input === 'string', LibAError, 120, 'Input must be string')
-        // @ts-ignore
         assertAs(input === 'foo', LibAError, 123, 'Input must be foo')
       }
 

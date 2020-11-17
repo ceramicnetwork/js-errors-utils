@@ -8,7 +8,9 @@ Custom errors utilities
 npm install errors-utils
 ```
 
-## Example usage
+## Examples
+
+### Library errors with metadata
 
 ```ts
 import { assertAs, createNamespaceError } from 'errors-utils'
@@ -23,6 +25,87 @@ try {
 } catch (error) {
   console.log(error.toString()) // '[LIB123] Input must be foo'
   throw new LibError(10, 'Input validation failed', error) // Wrap thrown error
+}
+```
+
+### Custom assertions
+
+```ts
+import { StackError, assertAs, createNamespaceError } from 'errors-utils'
+
+function createAssert(ErrorClass: typeof StackError) {
+  // Our assert function will use the provided Error class and default message
+  function assert(condition: boolean, code: string | number, message = 'Assertion failed') {
+    return assertAs(condition, ErrorClass, code, message)
+  }
+
+  assert.equal = (a, b, code = 11, msg = `${a} must be equal to ${b}`) => {
+    return assert(a === b, code, msg)
+  }
+  assert.notEqual = (a, b, code = 12, msg = `${a} must not be equal to ${b}`) => {
+    return assert(a !== b, code, msg)
+  }
+  // ...
+
+  return assert
+}
+
+const LibError = createNamespaceError('LIB')
+const assert = createAssert(LibError)
+assert.equal(a, b)
+```
+
+### Error classes extensions
+
+```ts
+import { assertAs, createNamespaceError } from 'errors-utils'
+
+// ProtocolError is used for clients interactions
+
+class ProtocolError extends createNamespaceError('PTL') {
+  toAPI(response) { ... }
+}
+
+const PROTOCOL_VERSION = 2
+
+function assertProtocolVersion(version: number) {
+  return assertAs(version === PROTOCOL_VERSION, ProtocolError, 1, `Invalid protocol version: expected ${PROTOCOL_VERSION}, got ${version}`)
+}
+
+function handleAPICall(request, response) {
+  try {
+    assertProtocolVersion(request.body.version)
+  } catch (error) {
+    if (error instanceof ProtocolError) {
+      return error.toAPI(response)
+    }
+  }
+}
+
+// InternalError is used for platform interactions
+
+class InternalError extends createNamespaceError('INT') {
+  // Attach logger to instance
+  logger: Logger = myLogger
+
+  log(level = 'critical') {
+    this.logger.log({ level, code: this.code, message: this.message })
+  }
+}
+
+function assertValidService(service) {
+  return assertAs(service instanceof Service, InternalError, 123, 'Invalid service provided')
+}
+
+function checkConfig(config) {
+  try {
+    assertValidService(config.myService)
+    ...
+  } catch (err) {
+    if (error instanceof InternalError) {
+      error.log()
+    }
+  }
 }
 ```
 
