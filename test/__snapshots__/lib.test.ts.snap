@@ -1,0 +1,70 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`lib integration different namespaces 1`] = `
+Object {
+  "code": "LIBB10",
+  "message": "Input validation failed",
+  "metadata": Object {
+    "package": "lib-b",
+    "version": "0.2.0",
+  },
+  "name": "StackError",
+  "stack": Array [
+    Object {
+      "code": "LIBA123",
+      "message": "Input must be foo",
+      "metadata": Object {
+        "package": "lib-a",
+        "version": "0.1.0",
+      },
+      "name": "StackError",
+      "stack": Array [],
+    },
+  ],
+}
+`;
+
+exports[`lib integration example code 1`] = `
+Object {
+  "code": "LIB10",
+  "message": "Input validation failed",
+  "metadata": Object {
+    "package": "my-lib",
+    "version": "0.1.0",
+  },
+  "name": "StackError",
+  "stack": Array [
+    Object {
+      "code": "LIB123",
+      "message": "Input must be foo",
+      "metadata": Object {
+        "package": "my-lib",
+        "version": "0.1.0",
+      },
+      "name": "StackError",
+      "stack": Array [],
+    },
+  ],
+}
+`;
+
+exports[`lib integration using standard error 1`] = `
+Object {
+  "code": "LIB10",
+  "message": "Input validation failed",
+  "metadata": Object {
+    "package": "my-lib",
+    "version": "0.1.0",
+  },
+  "name": "StackError",
+  "stack": Array [
+    Object {
+      "code": "SE0",
+      "message": "Input must be foo",
+      "metadata": Object {},
+      "name": "StackError",
+      "stack": Array [],
+    },
+  ],
+}
+`;
