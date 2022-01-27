@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "typedocOptions": {
+    "name": "Error utilities",
+    "readme": "none",
+    "entryPoints": ["./src/index.ts"],
+    "disableSources": true,
+    "githubPages": false,
+    "excludeExternals": true,
+    "excludeInternal": true,
+    "excludePrivate": true,
+    "hideBreadcrumbs": true,
+    "hideInPageTOC": true
+  }
+}
