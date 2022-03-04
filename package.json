@@ -1,49 +1,67 @@
 {
   "name": "errors-utils",
+  "version": "0.2.0",
   "author": "3Box Labs",
-  "version": "0.1.0",
-  "license": "MIT",
+  "license": "(Apache-2.0 OR MIT)",
+  "homepage": "https://github.com/ceramicnetwork/js-errors-utils#readme",
+  "keywords": [
+    "error",
+    "utilities"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ceramicnetwork/js-errors-utils"
+  },
+  "type": "module",
   "main": "dist/index.js",
-  "module": "dist/errors-utils.esm.js",
-  "typings": "dist/index.d.ts",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./*": "./dist/*.js"
+  },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "engines": {
-    "node": ">=12"
+    "node": ">=16"
   },
+  "sideEffects": false,
   "scripts": {
-    "start": "tsdx watch",
-    "build": "tsdx build",
-    "test": "tsdx test",
-    "lint": "tsdx lint src test",
-    "prepare": "tsdx build",
-    "size": "size-limit",
-    "analyze": "size-limit --why"
+    "build": "del dist && tsc --emitDeclarationOnly && swc src -d ./dist",
+    "docs": "typedoc --tsconfig tsconfig.docs.json",
+    "lint": "eslint src test --fix",
+    "test": "yarn node --experimental-vm-modules $(yarn bin jest)",
+    "prepare": "yarn build",
+    "prepublishOnly": "package-check"
   },
+  "dependencies": {},
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^4.7.0",
-    "eslint-config-3box": "^0.2.0",
-    "husky": "^4.3.0",
-    "size-limit": "^4.7.0",
-    "tsdx": "^0.14.1",
-    "tslib": "^2.0.3",
-    "typescript": "^4.0.5"
+    "@skypack/package-check": "^0.2.2",
+    "@swc/cli": "^0.1.55",
+    "@swc/core": "^1.2.130",
+    "@swc/jest": "^0.2.15",
+    "@types/jest": "^27.4.0",
+    "@types/nanoid": "^3.0.0",
+    "del-cli": "^4.0.1",
+    "eslint": "^8.7.0",
+    "eslint-config-3box": "^0.4.0",
+    "jest": "^27.4.7",
+    "prettier": "^2.5.1",
+    "typedoc": "^0.22.10",
+    "typedoc-plugin-markdown": "^3.11.11",
+    "typescript": "^4.5.4"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "tsdx lint"
-    }
-  },
-  "size-limit": [
-    {
-      "path": "dist/errors-utils.cjs.production.min.js",
-      "limit": "2 KB"
+  "jest": {
+    "extensionsToTreatAsEsm": [
+      ".ts"
+    ],
+    "moduleNameMapper": {
+      "^(\\.{1,2}/.*)\\.js$": "$1"
     },
-    {
-      "path": "dist/errors-utils.esm.js",
-      "limit": "2 KB"
+    "transform": {
+      "^.+\\.(t|j)s$": [
+        "@swc/jest"
+      ]
     }
-  ]
+  }
 }
